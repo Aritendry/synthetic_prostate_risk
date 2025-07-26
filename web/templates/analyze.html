@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProstaCheck - Analyse Personnalisée des Risques</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.8s ease-in-out',
+                        'slide-left': 'slideLeft 0.6s ease-out',
+                        'slide-right': 'slideRight 0.6s ease-out',
+                        'bounce-gentle': 'bounceGentle 2s infinite',
+                        'pulse-slow': 'pulse 3s infinite',
+                        'progress-fill': 'progressFill 2s ease-in-out',
+                        'result-appear': 'resultAppear 1s ease-out'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        slideLeft: {
+                            '0%': { opacity: '0', transform: 'translateX(-50px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' }
+                        },
+                        slideRight: {
+                            '0%': { opacity: '0', transform: 'translateX(50px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' }
+                        },
+                        bounceGentle: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-8px)' }
+                        },
+                        progressFill: {
+                            '0%': { width: '0%' },
+                            '100%': { width: '100%' }
+                        },
+                        resultAppear: {
+                            '0%': { opacity: '0', transform: 'scale(0.8) translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'scale(1) translateY(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .input-focus {
+            transition: all 0.3s ease;
+        }
+        .input-focus:focus {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .form-step {
+            display: none;
+        }
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+        }
+        .risk-low { background: linear-gradient(135deg, #10b981, #059669); }
+        .risk-medium { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .risk-high { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    </style>
+</head>
+<body class="bg-white min-h-screen font-sans">
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b-4 border-blue-500 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <div class="bg-blue-500 p-2 rounded-full shadow-lg">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">ProstaCheck</h1>
+                        <p class="text-blue-600 text-sm font-medium">Analyse Personnalisée</p>
+                    </div>
+                </div>
+                <a href="/" class="text-gray-600 hover:text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-all duration-300 font-medium">
+                    ← Retour à l'accueil
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg py-12">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="animate-fade-in">
+                <h2 class="text-4xl font-black text-gray-900 mb-4">
+                    Évaluation Complète de Vos
+                    <span class="text-blue-600">Facteurs de Risque</span>
+                </h2>
+                <p class="text-lg text-gray-600 mb-6 max-w-2xl mx-auto">
+                    Remplissez ce questionnaire médical complet pour obtenir une analyse précise 
+                    de votre risque de développer des problèmes prostatiques.
+                </p>
+                <div class="bg-white rounded-2xl p-6 card-shadow max-w-2xl mx-auto">
+                    <div class="flex items-center justify-center space-x-4">
+                        <div class="bg-blue-100 p-3 rounded-full">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                        </div>
+                        <div class="text-left">
+                            <h3 class="font-bold text-gray-900">Confidentialité Garantie</h3>
+                            <p class="text-gray-600 text-sm">Vos données sont sécurisées et anonymisées</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Progress Bar -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 mb-8">
+        <div class="bg-white rounded-2xl p-6 card-shadow">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-gray-900">Progression du Questionnaire</h3>
+                <span id="progress-text" class="text-blue-600 font-bold">Étape 1 sur 3</span>
+            </div>
+            <div class="bg-gray-200 rounded-full h-3">
+                <div id="progress-bar" class="progress-bar h-3 rounded-full transition-all duration-500 w-1/3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Form -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <form id="riskForm" action="/analyze" method="post" class="space-y-0">
+            
+            <!-- Étape 1: Informations Générales -->
+            <div id="step1" class="form-step active">
+                <div class="bg-white rounded-2xl p-8 card-shadow animate-slide-left">
+                    <div class="text-center mb-8">
+                        <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Informations Générales</h3>
+                        <p class="text-gray-600">Commençons par vos données de base</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Âge -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-bold text-gray-700 mb-2">
+                                <span class="flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    Âge (années)
+                                </span>
+                            </label>
+                            <input type="number" name="age" step="0.1" required 
+                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none input-focus text-lg font-medium"
+                                   placeholder="Ex: 45">
+                            <p class="text-xs text-gray-500">L'âge influence significativement les risques prostatiques</p>
+                        </div>
+
+                        <!-- BMI -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-bold text-gray-700 mb-2">
+                                <span class="flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                    </svg>
+                                    Indice de Masse Corporelle (BMI)
+                                </span>
+                            </label>
+                            <input type="number" name="bmi" step="0.1" required 
+                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none input-focus text-lg font-medium"
+                                   placeholder="Ex: 25.3">
+                            <p class="text-xs text-gray-500">Normal: 18.5-24.9 | Surpoids: 25-29.9 | Obésité: ≥30</p>
+                        </div>
+
+                        <!-- Heures de sommeil -->
+                        <div class="space-y-2 md:col-span-2">
+                            <label class="block text-sm font-bold text-gray-700 mb-2">
+                                <span class="flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                                    </svg>
+                                    Heures de Sommeil par Nuit
+                                </span>
+                            </label>
+                            <input type="number" name="sleep_hours" step="0.1" required 
+                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none input-focus text-lg font-medium"
+                                   placeholder="Ex: 7.5">
+                            <p class="text-xs text-gray-500">Le sommeil joue un rôle crucial dans la régulation hormonale</p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end mt-8">
+                        <button type="button" onclick="nextStep(1)" 
+                                class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+                            Continuer →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Étape 2: Style de Vie -->
+            <div id="step2" class="form-step">
+                <div class="bg-white rounded-2xl p-8 card-shadow animate-slide-right">
+                    <div class="text-center mb-8">
+                        <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Habitudes de Vie</h3>
+                        <p class="text-gray-600">Vos habitudes quotidiennes influencent votre santé</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Fumeur -->
+                        <div class="space-y-3">
+                            <label class="block text-sm font-bold text-gray-700">
+                                <span class="flex items-center mb-3">
+                                    <svg class="w-4 h-4 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                    </svg>
+                                    Êtes-vous fumeur ?
+                                </span>
+                            </label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-green-400 hover:bg-green-50 transition-all duration-300">
+                                    <input type="radio" name="smoker" value="No" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-2xl mb-2">🚭</div>
+                                        <span class="font-medium text-gray-700">Non</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-red-400 hover:bg-red-50 transition-all duration-300">
+                                    <input type="radio" name="smoker" value="Yes" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-2xl mb-2">🚬</div>
+                                        <span class="font-medium text-gray-700">Oui</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Consommation d'alcool -->
+                        <div class="space-y-3">
+                            <label class="block text-sm font-bold text-gray-700">
+                                <span class="flex items-center mb-3">
+                                    <svg class="w-4 h-4 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                                    </svg>
+                                    Consommation d'Alcool
+                                </span>
+                            </label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <label class="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all duration-300">
+                                    <input type="radio" name="alcohol" value="None" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-xl mb-1">💧</div>
+                                        <span class="text-sm font-medium text-gray-700">Aucune</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-green-400 hover:bg-green-50 transition-all duration-300">
+                                    <input type="radio" name="alcohol" value="Low" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-xl mb-1">🍷</div>
+                                        <span class="text-sm font-medium text-gray-700">Faible</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-yellow-400 hover:bg-yellow-50 transition-all duration-300">
+                                    <input type="radio" name="alcohol" value="Moderate" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-xl mb-1">🍺</div>
+                                        <span class="text-sm font-medium text-gray-700">Modérée</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-red-400 hover:bg-red-50 transition-all duration-300">
+                                    <input type="radio" name="alcohol" value="High" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-xl mb-1">🍻</div>
+                                        <span class="text-sm font-medium text-gray-700">Élevée</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Régime alimentaire -->
+                        <div class="space-y-3">
+                            <label class="block text-sm font-bold text-gray-700">
+                                <span class="flex items-center mb-3">
+                                    <svg class="w-4 h-4 mr-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16l.01-.01M12 3v2"></path>
+                                    </svg>
+                                    Type de Régime Alimentaire
+                                </span>
+                            </label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-red-400 hover:bg-red-50 transition-all duration-300">
+                                    <input type="radio" name="diet" value="Fatty" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-2xl mb-2">🍔</div>
+                                        <span class="text-sm font-medium text-gray-700">Gras</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-green-400 hover:bg-green-50 transition-all duration-300">
+                                    <input type="radio" name="diet" value="Healthy" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-2xl mb-2">🥗</div>
+                                        <span class="text-sm font-medium text-gray-700">Sain</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all duration-300">
+                                    <input type="radio" name="diet" value="Mixed" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-2xl mb-2">🍽️</div>
+                                        <span class="text-sm font-medium text-gray-700">Mixte</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Activité physique -->
+                        <div class="space-y-3">
+                            <label class="block text-sm font-bold text-gray-700">
+                                <span class="flex items-center mb-3">
+                                    <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                    Niveau d'Activité Physique
+                                </span>
+                            </label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-red-400 hover:bg-red-50 transition-all duration-300">
+                                    <input type="radio" name="physical" value="Low" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-2xl mb-2">📺</div>
+                                        <span class="text-sm font-medium text-gray-700">Faible</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-yellow-400 hover:bg-yellow-50 transition-all duration-300">
+                                    <input type="radio" name="physical" value="Moderate" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-2xl mb-2">🚶</div>
+                                        <span class="text-sm font-medium text-gray-700">Modéré</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-green-400 hover:bg-green-50 transition-all duration-300">
+                                    <input type="radio" name="physical" value="High" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-2xl mb-2">🏃</div>
+                                        <span class="text-sm font-medium text-gray-700">Élevé</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between mt-8">
+                        <button type="button" onclick="prevStep(2)" 
+                                class="bg-gray-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-gray-600 transition-all duration-300">
+                            ← Précédent
+                        </button>
+                        <button type="button" onclick="nextStep(2)" 
+                                class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+                            Continuer →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Étape 3: Antécédents Médicaux -->
+            <div id="step3" class="form-step">
+                <div class="bg-white rounded-2xl p-8 card-shadow animate-slide-left">
+                    <div class="text-center mb-8">
+                        <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Antécédents Médicaux</h3>
+                        <p class="text-gray-600">Informations médicales et habitudes de suivi</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Antécédents familiaux -->
+                        <div class="space-y-3">
+                            <label class="block text-sm font-bold text-gray-700">
+                                <span class="flex items-center mb-3">
+                                    <svg class="w-4 h-4 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-5.07 3.903-9.2 8.852-9.56M15 9a3 3 0 11-6 0 3 3 0 016 0zm-3 7a6 6 0 00-6 6v2H9a9 9 0 0118 0v-2a6 6 0 00-6-6z"></path>
+                                    </svg>
+                                    Antécédents Familiaux de Problèmes Prostatiques
+                                </span>
+                            </label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-green-400 hover:bg-green-50 transition-all duration-300">
+                                    <input type="radio" name="family_history" value="No" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-2xl mb-2">✅</div>
+                                        <span class="font-medium text-gray-700">Non</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-red-400 hover:bg-red-50 transition-all duration-300">
+                                    <input type="radio" name="family_history" value="Yes" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-2xl mb-2">⚠️</div>
+                                        <span class="font-medium text-gray-700">Oui</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Niveau de stress mental -->
+                        <div class="space-y-3">
+                            <label class="block text-sm font-bold text-gray-700">
+                                <span class="flex items-center mb-3">
+                                    <svg class="w-4 h-4 mr-2 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                    </svg>
+                                    Niveau de Stress Mental
+                                </span>
+                            </label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-green-400 hover:bg-green-50 transition-all duration-300">
+                                    <input type="radio" name="mental_stress" value="Low" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-2xl mb-2">😌</div>
+                                        <span class="text-sm font-medium text-gray-700">Faible</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-yellow-400 hover:bg-yellow-50 transition-all duration-300">
+                                    <input type="radio" name="mental_stress" value="Medium" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-2xl mb-2">😐</div>
+                                        <span class="text-sm font-medium text-gray-700">Moyen</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-red-400 hover:bg-red-50 transition-all duration-300">
+                                    <input type="radio" name="mental_stress" value="High" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-2xl mb-2">😰</div>
+                                        <span class="text-sm font-medium text-gray-700">Élevé</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Bilans de santé réguliers -->
+                        <div class="space-y-3">
+                            <label class="block text-sm font-bold text-gray-700">
+                                <span class="flex items-center mb-3">
+                                    <svg class="w-4 h-4 mr-2 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v6a2 2 0 002 2h2m0 0h2m-2 0v6a2 2 0 01-2 2H7a2 2 0 01-2-2v-6a2 2 0 012-2h2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h2z"></path>
+                                    </svg>
+                                    Faites-vous des Bilans de Santé Réguliers ?
+                                </span>
+                            </label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-red-400 hover:bg-red-50 transition-all duration-300">
+                                    <input type="radio" name="checkup" value="No" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-2xl mb-2">❌</div>
+                                        <span class="font-medium text-gray-700">Non</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-green-400 hover:bg-green-50 transition-all duration-300">
+                                    <input type="radio" name="checkup" value="Yes" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-2xl mb-2">✅</div>
+                                        <span class="font-medium text-gray-700">Oui</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Examen prostatique -->
+                        <div class="space-y-3">
+                            <label class="block text-sm font-bold text-gray-700">
+                                <span class="flex items-center mb-3">
+                                    <svg class="w-4 h-4 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Avez-vous Déjà Fait un Examen Prostatique ?
+                                </span>
+                            </label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-red-400 hover:bg-red-50 transition-all duration-300">
+                                    <input type="radio" name="prostate_exam" value="No" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-2xl mb-2">🚫</div>
+                                        <span class="font-medium text-gray-700">Jamais</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-green-400 hover:bg-green-50 transition-all duration-300">
+                                    <input type="radio" name="prostate_exam" value="Yes" required class="sr-only">
+                                    <div class="w-full text-center">
+                                        <div class="text-2xl mb-2">🩺</div>
+                                        <span class="font-medium text-gray-700">Oui</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between mt-8">
+                        <button type="button" onclick="prevStep(3)" 
+                                class="bg-gray-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-gray-600 transition-all duration-300">
+                            ← Précédent
+                        </button>
+                        <button type="submit" 
+                                class="bg-green-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-green-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl animate-bounce-gentle">
+                            🔍 Analyser Mon Risque
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Résultat de l'analyse -->
+        {% if result %}
+        <div class="bg-white rounded-2xl p-8 card-shadow animate-result-appear">
+            <div class="text-center mb-8">
+                <div class="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-3xl font-black text-gray-900 mb-4">Résultat de Votre Analyse</h3>
+            </div>
+
+            <div class="text-center">
+                {% if result == "Low Risk" %}
+                <div class="risk-low text-white p-8 rounded-2xl mb-6">
+                    <div class="text-6xl mb-4">✅</div>
+                    <h4 class="text-2xl font-bold mb-2">Risque Faible</h4>
+                    <p class="text-lg opacity-90">Excellente nouvelle ! Votre profil présente un faible risque</p>
+                </div>
+                {% elif result == "Medium Risk" %}
+                <div class="risk-medium text-white p-8 rounded-2xl mb-6">
+                    <div class="text-6xl mb-4">⚠️</div>
+                    <h4 class="text-2xl font-bold mb-2">Risque Moyen</h4>
+                    <p class="text-lg opacity-90">Surveillance recommandée et suivi régulier</p>
+                </div>
+                {% elif result == "High Risk" %}
+                <div class="risk-high text-white p-8 rounded-2xl mb-6">
+                    <div class="text-6xl mb-4">🚨</div>
+                    <h4 class="text-2xl font-bold mb-2">Risque Élevé</h4>
+                    <p class="text-lg opacity-90">Consultation médicale recommandée rapidement</p>
+                </div>
+                {% else %}
+                <div class="bg-blue-500 text-white p-8 rounded-2xl mb-6">
+                    <div class="text-6xl mb-4">🔍</div>
+                    <h4 class="text-2xl font-bold mb-2">{{ result }}</h4>
+                    <p class="text-lg opacity-90">Résultat de l'analyse par notre IA</p>
+                </div>
+                {% endif %}
+                
+                <p class="text-gray-600 text-lg leading-relaxed mb-6">
+                    Cette évaluation est basée sur les facteurs de risque que vous avez fournis et analysée par notre intelligence artificielle. 
+                    Consultez toujours un professionnel de santé pour un diagnostic complet et des recommandations personnalisées.
+                </p>
+            </div>
+
+            <div class="flex justify-center space-x-4">
+                <a href="/analyze" 
+                   class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-all duration-300">
+                    Nouvelle Analyse
+                </a>
+                <a href="/" 
+                   class="bg-gray-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-600 transition-all duration-300">
+                    Retour à l'Accueil
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 3;
+
+        // Gestion des étapes du formulaire
+        function nextStep(step) {
+            if (validateStep(step)) {
+                document.getElementById(`step${step}`).classList.remove('active');
+                currentStep++;
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                updateProgressBar();
+            }
+        }
+
+        function prevStep(step) {
+            document.getElementById(`step${step}`).classList.remove('active');
+            currentStep--;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            updateProgressBar();
+        }
+
+        function updateProgressBar() {
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const progressPercentage = (currentStep / totalSteps) * 100;
+            
+            progressBar.style.width = progressPercentage + '%';
+            progressText.textContent = `Étape ${currentStep} sur ${totalSteps}`;
+        }
+
+        function validateStep(step) {
+            const currentStepElement = document.getElementById(`step${step}`);
+            const requiredInputs = currentStepElement.querySelectorAll('input[required]');
+            
+            for (let input of requiredInputs) {
+                if (input.type === 'radio') {
+                    const radioGroup = currentStepElement.querySelectorAll(`input[name="${input.name}"]`);
+                    let radioChecked = false;
+                    for (let radio of radioGroup) {
+                        if (radio.checked) {
+                            radioChecked = true;
+                            break;
+                        }
+                    }
+                    if (!radioChecked) {
+                        alert(`Veuillez sélectionner une option pour "${input.name}"`);
+                        return false;
+                    }
+                } else if (!input.value.trim()) {
+                    alert(`Veuillez remplir le champ "${input.name}"`);
+                    input.focus();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Gestion des sélections radio avec animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const radioInputs = document.querySelectorAll('input[type="radio"]');
+            
+            radioInputs.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // Réinitialiser tous les labels du même groupe
+                    const groupName = this.name;
+                    const groupRadios = document.querySelectorAll(`input[name="${groupName}"]`);
+                    
+                    groupRadios.forEach(groupRadio => {
+                        const label = groupRadio.parentElement;
+                        label.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-50', 'border-blue-500');
+                        label.classList.add('border-gray-200');
+                    });
+                    
+                    // Mettre en évidence le label sélectionné
+                    const selectedLabel = this.parentElement;
+                    selectedLabel.classList.remove('border-gray-200');
+                    selectedLabel.classList.add('ring-2', 'ring-blue-500', 'bg-blue-50', 'border-blue-500');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
